@@ -17,7 +17,7 @@ App = React.createClass({
         this.setState({
             loading: true
         });
-        this.getGif(searchingText, function(gif) {
+        this.getGif(searchingText).then(function(gif) {
             this.setState({
                 loading: false,
                 gif: gif,
@@ -26,21 +26,30 @@ App = React.createClass({
         }.bind(this));
     },
 
-    getGif: function(searchingText, callback) {
-        var url = GIPHY_API_URL + '/v1/gifs/random?api_key=' + GIPHY_PUB_KEY + '&tag=' + searchingText;
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText).data;
-                    var gif = {
-                        url: data.fixed_width_downsampled_url,
-                        sourceUrl: data.url
-                    };
-                callback(gif);
+    getGif: function(searchingText) {
+        return new Promise(
+            function(resolve, reject) {
+                var url = GIPHY_API_URL + '/v1/gifs/random?api_key=' + GIPHY_PUB_KEY + '&tag=' + searchingText;
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url);
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        var data = JSON.parse(xhr.responseText).data;
+                        var gif = {
+                            url: data.fixed_width_downsampled_url,
+                            sourceUrl: data.url
+                        };
+                        resolve(gif);
+                    } else {
+                        reject(new Error(console.log('Server response differs from status 200')));
+                    }
+                };
+                xhr.onerror = function() {
+                    reject(new Error(console.log('No server response')));
+                }
+                xhr.send();
             }
-        };
-        xhr.send();
+        )
     },
 
     render: function() {

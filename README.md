@@ -1,1 +1,1 @@
-React exercise - gif search: https://grzegorz-turek.github.io/react-gifsearch/
+React exercise including ES6 Promises - gif search: https://grzegorz-turek.github.io/react-gifsearch-es6/
